@@ -1,3 +1,7 @@
+/*
+copyright Paul Handy, 2017
+
+
 Permission is hereby granted, perpetual, worldwide, non-exclusive, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 
@@ -39,3 +43,69 @@ The above copyright notice and this permission notice shall be included in all c
 
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+package com.viralnetworkreactnativeiss;
+
+public class Adder {
+  private static int sum(final int a, final int b) {
+    final int s = a + b;
+
+    switch (s) {
+      case 2:
+        return -1;
+      case -2:
+        return 1;
+      default:
+        return s;
+    }
+  }
+
+  private static int cons(final int a, final int b) {
+    if (a == b) {
+      return a;
+    }
+
+    return 0;
+  }
+
+  private static int any(final int a, final int b) {
+    final int s = a + b;
+
+    if (s > 0) {
+      return 1;
+    } else if (s < 0) {
+      return -1;
+    }
+
+    return 0;
+  }
+
+  private static int[] full_add(final int a, final int b, final int c) {
+    final int s_a = sum(a, b);
+    final int c_a = cons(a, b);
+    final int c_b = cons(s_a, c);
+    final int c_out = any(c_a, c_b);
+    final int s_out = sum(s_a, c);
+
+    final int[] out = {s_out, c_out};
+    return out;
+  }
+
+  public static void add(final byte[] a, final byte[] b, final byte[] out) {
+    int carry = 0;
+    int a_i;
+    int b_i;
+
+    for (int i = 0; i < out.length; i++) {
+      a_i = i < a.length ? a[i] : 0;
+      b_i = i < b.length ? b[i] : 0;
+
+      final int[] f_a = full_add(a_i, b_i, carry);
+
+      out[i] = (byte) f_a[0];
+      carry = f_a[1];
+    }
+  }
+}

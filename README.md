@@ -14,8 +14,6 @@ npm install @viral-network/react-native-iss
 import ReactNativeIss from "@viral-network/react-native-iss";
 
 // ...
-
-const result = await ReactNativeIss.multiply(3, 7);
 ```
 
 ## Contributing

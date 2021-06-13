@@ -38,7 +38,6 @@
   ],
   "repository": "https://github.com/viral-network/react-native-iss",
   "author": "Chris Dukakis <chrisdukakis@gmail.com> (https://github.com/chrisdukakis)",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/viral-network/react-native-iss/issues"
   },
@@ -149,5 +148,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "@web-ict/iss": "^0.0.0-beta.29"
   }
 }

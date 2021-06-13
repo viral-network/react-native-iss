@@ -1,3 +1,4 @@
+/*
 Permission is hereby granted, perpetual, worldwide, non-exclusive, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 
@@ -39,3 +40,47 @@ The above copyright notice and this permission notice shall be included in all c
 
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+import * as React from 'react';
+
+import { StyleSheet, View, Text } from 'react-native';
+import ReactNativeIss, { HASH_LENGTH } from '@viral-network/react-native-iss';
+import Curl729_27 from './curl.js';
+
+let i = 0;
+const iss = ReactNativeIss(Curl729_27, () => Promise.resolve(i++));
+
+export default function App() {
+  const [result, setResult] = React.useState();
+
+  React.useEffect(() => {
+    iss
+      .address(new Array(HASH_LENGTH).fill(0), 2)
+      .then((res) => setResult(res.address.toString()))
+      .then(() =>
+        iss
+          .address(new Array(HASH_LENGTH).fill(0), 2)
+          .then((res) => setResult(res.address.toString()))
+      );
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Result: {result}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  box: {
+    width: 60,
+    height: 60,
+    marginVertical: 20,
+  },
+});
