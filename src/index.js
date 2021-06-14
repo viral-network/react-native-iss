@@ -72,6 +72,17 @@ export {
   SECURITY_LEVEL_OFFSET,
 };
 
+const subseed = (seed, index) =>
+  ReactNativeIss.subseed(Array.from(seed), index);
+
+const key = (subseedTrits, security) =>
+  ReactNativeIss.key(Array.from(subseedTrits), security);
+
+const digests = (keyTrits) => ReactNativeIss.digests(Array.from(keyTrits));
+
+const addressFromDigests = (digestsTrits) =>
+  ReactNativeIss.addressFromDigests(Array.from(digestsTrits));
+
 const address =
   (increment) =>
   async (seed, security, digestsTrits = new Int8Array(0)) => {
@@ -87,26 +98,43 @@ const address =
       outcome.index = index;
       outcome.digests.set(digestsTrits);
       outcome.digests.set(
-        Int8Array.from(
-          await ReactNativeIss.digests(
-            await ReactNativeIss.key(
-              await ReactNativeIss.subseed(seed, index),
-              security
-            )
+        await ReactNativeIss.digests(
+          await ReactNativeIss.key(
+            await ReactNativeIss.subseed(seed, index),
+            security
           )
         ),
         digestsTrits.length
       );
 
-      outcome.address = await ReactNativeIss.addressFromDigests(
-        Array.from(outcome.digests)
-      );
+      outcome.address = await addressFromDigests(outcome.digests);
     } while (
       outcome.address[SECURITY_LEVEL_OFFSET] !== SECURITY_LEVEL_TRITS[security]
     );
 
     return outcome;
   };
+
+const digest = (bundle, signatureFragmentTrits) =>
+  ReactNativeIss.digest(Array.from(bundle), Array.from(signatureFragmentTrits));
+
+const signatureFragment = (bundle, keyFragment) =>
+  ReactNativeIss.signatureFragment(Array.from(bundle), Array.from(keyFragment));
+
+const validateSignatures = (expectedAddress, signatureFragments, bundle) =>
+  ReactNativeIss.validateSignatures(
+    Array.from(expectedAddress),
+    Array.from(signatureFragments),
+    Array.from(bundle)
+  );
+
+const getMerkleRoot = (hash, trits, index, depth) =>
+  ReactNativeIss.getMerkleRoot(
+    Array.from(hash),
+    Array.from(trits),
+    index,
+    depth
+  );
 
 export const getMerkleProof = (root, index) => {
   const leaves = [];
@@ -154,10 +182,7 @@ export const merkleTree =
 
     for (let i = 0; i < count; i++) {
       const leafIndex = start + i;
-      const keyTrits = await ReactNativeIss.key(
-        await ReactNativeIss.subseed(Array.from(seed), start + i),
-        security
-      );
+      const keyTrits = await key(await subseed(seed, start + i), security);
       const addressTrits = Array.from(
         await ReactNativeIss.addressFromDigests(
           await ReactNativeIss.digests(keyTrits)
@@ -209,9 +234,16 @@ export const merkleTree =
   };
 
 export default (Curl729_27, increment) => ({
+  subseed,
+  key,
+  digests,
   address: address(increment),
+  addressFromDigests,
+  digest,
+  signatureFragment,
+  validateSignatures,
   bundleTrytes,
+  getMerkleRoot,
   getMerkleProof,
   merkleTree: merkleTree(increment, Curl729_27),
-  ...ReactNativeIss,
 });

@@ -44,7 +44,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 import * as React from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, ScrollView, Text } from 'react-native';
 import ReactNativeIss, { HASH_LENGTH } from '@viral-network/react-native-iss';
 import Curl729_27 from './curl.js';
 
@@ -56,19 +56,17 @@ export default function App() {
 
   React.useEffect(() => {
     iss
-      .address(new Array(HASH_LENGTH).fill(0), 2)
-      .then((res) => setResult(res.address.toString()))
-      .then(() =>
-        iss
-          .address(new Array(HASH_LENGTH).fill(0), 2)
-          .then((res) => setResult(res.address.toString()))
-      );
+      .subseed(new Array(HASH_LENGTH).fill(0), 1)
+      .then((res) => iss.key(res, 2))
+      .then((res) => iss.digests(res))
+      .then((res) => iss.addressFromDigests(res))
+      .then((res) => setResult(res.toString()));
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView>
       <Text>Result: {result}</Text>
-    </View>
+    </ScrollView>
   );
 }
 

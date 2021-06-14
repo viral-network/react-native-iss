@@ -138,15 +138,20 @@ public class ISS {
 
   public static void signatureFragment(final byte[] bundle, final byte[] keyFragment, final byte[] signatureFragmentTrits) {
     final Curl_729_27 curl = new Curl_729_27(0);
+    final byte[] buffer = Arrays.copyOfRange(keyFragment, 0, KEY_SIGNATURE_FRAGMENT_LENGTH);
 
     for (int j = 0; j < KEY_SIGNATURE_FRAGMENT_LENGTH / Curl_729_27.HASH_LENGTH; j++) {
       for (int k = 0; k < MAX_TRYTE_VALUE - bundle[j]; k++) {
         final byte[] lengthTrits = new byte[Curl_729_27.HASH_LENGTH];
         Converter.copy(Curl_729_27.HASH_LENGTH, lengthTrits, 0, lengthTrits.length);
         curl.reset(lengthTrits);
-        curl.absorb(signatureFragmentTrits, j * Curl_729_27.HASH_LENGTH, Curl_729_27.HASH_LENGTH);
-        curl.squeeze(signatureFragmentTrits, j * Curl_729_27.HASH_LENGTH, Curl_729_27.HASH_LENGTH);
+        curl.absorb(buffer, j * Curl_729_27.HASH_LENGTH, Curl_729_27.HASH_LENGTH);
+        curl.squeeze(buffer, j * Curl_729_27.HASH_LENGTH, Curl_729_27.HASH_LENGTH);
       }
+    }
+
+    for (int i = 0; i < KEY_SIGNATURE_FRAGMENT_LENGTH; i++) {
+      signatureFragmentTrits[i] = buffer[i];
     }
   }
 

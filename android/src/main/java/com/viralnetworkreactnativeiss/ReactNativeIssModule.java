@@ -80,7 +80,7 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
 
         final WritableArray subseedTritsCopy = Arguments.createArray();
         for (int i = 0; i < subseedTrits.length; i++) {
-            subseedTritsCopy.pushInt((int) subseedTrits[i]);
+            subseedTritsCopy.pushInt(subseedTrits[i]);
         }
         promise.resolve(subseedTritsCopy);
     }
@@ -96,7 +96,7 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
 
         final WritableArray keyTritsCopy = Arguments.createArray();
         for (int i = 0; i < keyTrits.length; i++) {
-            keyTritsCopy.pushInt((int) keyTrits[i]);
+            keyTritsCopy.pushInt(keyTrits[i]);
         }
         promise.resolve(keyTritsCopy);
     }
@@ -112,7 +112,7 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
 
         final WritableArray digestsTritsCopy = Arguments.createArray();
         for (int i = 0; i < digestsTrits.length; i++) {
-            digestsTritsCopy.pushInt((int) digestsTrits[i]);
+            digestsTritsCopy.pushInt(digestsTrits[i]);
         }
         promise.resolve(digestsTritsCopy);
     }
@@ -132,7 +132,7 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
 
         final WritableArray digestTritsCopy = Arguments.createArray();
         for (int i = 0; i < digestTrits.length; i++) {
-            digestTritsCopy.pushInt((int) digestTrits[i]);
+            digestTritsCopy.pushInt(digestTrits[i]);
         }
         promise.resolve(digestTritsCopy);
     }
@@ -149,7 +149,7 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
 
         final WritableArray addressTritsCopy = Arguments.createArray();
         for (int i = 0; i < addressTrits.length; i++) {
-          addressTritsCopy.pushInt((int) addressTrits[i]);
+          addressTritsCopy.pushInt(addressTrits[i]);
         }
         promise.resolve(addressTritsCopy);
     }
@@ -169,9 +169,9 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
 
         final WritableArray signatureFragmentTritsCopy = Arguments.createArray();
         for (int i = 0; i < signatureFragmentTrits.length; i++) {
-            signatureFragmentTritsCopy.pushInt((int) signatureFragmentTrits[i]);
+            signatureFragmentTritsCopy.pushInt(signatureFragmentTrits[i]);
         }
-        promise.resolve(signatureFragmentTrits);
+        promise.resolve(signatureFragmentTritsCopy);
     }
 
     @ReactMethod
