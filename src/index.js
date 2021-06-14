@@ -245,5 +245,5 @@ export default (Curl729_27, increment) => ({
   bundleTrytes,
   getMerkleRoot,
   getMerkleProof,
-  merkleTree: merkleTree(increment, Curl729_27),
+  merkleTree: merkleTree(Curl729_27, increment),
 });
