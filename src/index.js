@@ -72,18 +72,18 @@ export {
   SECURITY_LEVEL_OFFSET,
 };
 
-const subseed = (seed, index) =>
+export const subseed = (seed, index) =>
   ReactNativeIss.subseed(Array.from(seed), index);
 
-const key = (subseedTrits, security) =>
+export const key = (subseedTrits, security) =>
   ReactNativeIss.key(Array.from(subseedTrits), security);
 
-const digests = (keyTrits) => ReactNativeIss.digests(Array.from(keyTrits));
+export const digests = (keyTrits) => ReactNativeIss.digests(Array.from(keyTrits));
 
-const addressFromDigests = (digestsTrits) =>
+export const addressFromDigests = (digestsTrits) =>
   ReactNativeIss.addressFromDigests(Array.from(digestsTrits));
 
-const address =
+export const address =
   (increment) =>
   async (seed, security, digestsTrits = new Int8Array(0)) => {
     const outcome = {
@@ -98,9 +98,9 @@ const address =
       outcome.index = index;
       outcome.digests.set(digestsTrits);
       outcome.digests.set(
-        await ReactNativeIss.digests(
-          await ReactNativeIss.key(
-            await ReactNativeIss.subseed(seed, index),
+        await digests(
+          await key(
+            await subseed(seed, index),
             security
           )
         ),
@@ -115,20 +115,20 @@ const address =
     return outcome;
   };
 
-const digest = (bundle, signatureFragmentTrits) =>
+export const digest = (bundle, signatureFragmentTrits) =>
   ReactNativeIss.digest(Array.from(bundle), Array.from(signatureFragmentTrits));
 
-const signatureFragment = (bundle, keyFragment) =>
+export const signatureFragment = (bundle, keyFragment) =>
   ReactNativeIss.signatureFragment(Array.from(bundle), Array.from(keyFragment));
 
-const validateSignatures = (expectedAddress, signatureFragments, bundle) =>
+export const validateSignatures = (expectedAddress, signatureFragments, bundle) =>
   ReactNativeIss.validateSignatures(
     Array.from(expectedAddress),
     Array.from(signatureFragments),
     Array.from(bundle)
   );
 
-const getMerkleRoot = (hash, trits, index, depth) =>
+export const getMerkleRoot = (hash, trits, index, depth) =>
   ReactNativeIss.getMerkleRoot(
     Array.from(hash),
     Array.from(trits),
@@ -184,8 +184,8 @@ export const merkleTree =
       const leafIndex = start + i;
       const keyTrits = await key(await subseed(seed, start + i), security);
       const addressTrits = Array.from(
-        await ReactNativeIss.addressFromDigests(
-          await ReactNativeIss.digests(keyTrits)
+        await addressFromDigests(
+          await digests(keyTrits)
         )
       );
 
