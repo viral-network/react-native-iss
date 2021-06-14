@@ -78,7 +78,8 @@ export const subseed = (seed, index) =>
 export const key = (subseedTrits, security) =>
   ReactNativeIss.key(Array.from(subseedTrits), security);
 
-export const digests = (keyTrits) => ReactNativeIss.digests(Array.from(keyTrits));
+export const digests = (keyTrits) =>
+  ReactNativeIss.digests(Array.from(keyTrits));
 
 export const addressFromDigests = (digestsTrits) =>
   ReactNativeIss.addressFromDigests(Array.from(digestsTrits));
@@ -98,12 +99,7 @@ export const address =
       outcome.index = index;
       outcome.digests.set(digestsTrits);
       outcome.digests.set(
-        await digests(
-          await key(
-            await subseed(seed, index),
-            security
-          )
-        ),
+        await digests(await key(await subseed(seed, index), security)),
         digestsTrits.length
       );
 
@@ -121,7 +117,11 @@ export const digest = (bundle, signatureFragmentTrits) =>
 export const signatureFragment = (bundle, keyFragment) =>
   ReactNativeIss.signatureFragment(Array.from(bundle), Array.from(keyFragment));
 
-export const validateSignatures = (expectedAddress, signatureFragments, bundle) =>
+export const validateSignatures = (
+  expectedAddress,
+  signatureFragments,
+  bundle
+) =>
   ReactNativeIss.validateSignatures(
     Array.from(expectedAddress),
     Array.from(signatureFragments),
@@ -184,9 +184,7 @@ export const merkleTree =
       const leafIndex = start + i;
       const keyTrits = await key(await subseed(seed, start + i), security);
       const addressTrits = Array.from(
-        await addressFromDigests(
-          await digests(keyTrits)
-        )
+        await addressFromDigests(await digests(keyTrits))
       );
 
       leaves.push({
