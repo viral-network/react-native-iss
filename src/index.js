@@ -174,64 +174,14 @@ export const getMerkleProof = (root, index) => {
   };
 };
 
-export const merkleTree =
-  (Curl729_27, increment) => async (seed, depth, security) => {
-    const leaves = [];
-    const count = 2 ** depth;
-    const start = await increment(count);
+export const merkleTree = (increment) => async (seed, depth, security) => {
+  const count = 2 ** depth;
+  const start = await increment(count);
+  const tree = await ReactNativeIss.merkleTree(seed, depth, start, security);
+  return JSON.parse(tree);
+};
 
-    for (let i = 0; i < count; i++) {
-      const leafIndex = start + i;
-      const keyTrits = await key(await subseed(seed, start + i), security);
-      const addressTrits = Array.from(
-        await addressFromDigests(await digests(keyTrits))
-      );
-
-      leaves.push({
-        address: addressTrits,
-        leafIndex,
-        size: 1,
-      });
-    }
-
-    // eslint-disable-next-line no-shadow
-    const tree = (leaves) => {
-      const subnodes = [];
-
-      for (let i = 0; i < leaves.length; i += 2) {
-        const left = leaves[i];
-        const right = i + 1 < leaves.length ? leaves[i + 1] : undefined;
-        let addressTrits;
-
-        if (right) {
-          const curl = new Curl729_27(HASH_LENGTH);
-          curl.absorb(Int8Array.from(left.address), 0, HASH_LENGTH);
-          curl.absorb(Int8Array.from(right.address), 0, HASH_LENGTH);
-          addressTrits = new Int8Array(HASH_LENGTH);
-          curl.squeeze(addressTrits, 0, addressTrits.length);
-        } else {
-          addressTrits = left.addressTrits;
-        }
-
-        subnodes.push({
-          left,
-          right,
-          size: (left ? left.size : 0) + (right ? right.size : 0),
-          address: Array.from(addressTrits),
-        });
-      }
-
-      if (subnodes.length === 1) {
-        return subnodes[0];
-      }
-
-      return tree(subnodes);
-    };
-
-    return tree(leaves);
-  };
-
-export default (Curl729_27, increment) => ({
+export default (increment) => ({
   subseed,
   key,
   digests,
@@ -243,5 +193,5 @@ export default (Curl729_27, increment) => ({
   bundleTrytes,
   getMerkleRoot,
   getMerkleProof,
-  merkleTree: merkleTree(Curl729_27, increment),
+  merkleTree: merkleTree(increment),
 });

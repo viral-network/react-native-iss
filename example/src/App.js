@@ -46,13 +46,17 @@ import * as React from 'react';
 
 import { StyleSheet, ScrollView, Text } from 'react-native';
 import ReactNativeIss, { HASH_LENGTH } from '@viral-network/react-native-iss';
-import Curl729_27 from './curl.js';
 
 let i = 0;
-const iss = ReactNativeIss(Curl729_27, () => Promise.resolve(i++));
+const iss = ReactNativeIss((count = 1) => {
+  let index = i;
+  i += count;
+  return Promise.resolve(index);
+});
 
 export default function App() {
-  const [result, setResult] = React.useState();
+  const [result, setResult] = React.useState('');
+  const [tree, setTree] = React.useState('');
 
   React.useEffect(() => {
     iss
@@ -61,11 +65,16 @@ export default function App() {
       .then((res) => iss.digests(res))
       .then((res) => iss.addressFromDigests(res))
       .then((res) => setResult(res.toString()));
+    iss
+      .merkleTree(new Array(HASH_LENGTH).fill(0), 2, 1)
+      .then((res) => JSON.stringify(res))
+      .then((res) => setTree(res));
   }, []);
 
   return (
     <ScrollView>
       <Text>Result: {result}</Text>
+      <Text>Tree: {tree}</Text>
     </ScrollView>
   );
 }
