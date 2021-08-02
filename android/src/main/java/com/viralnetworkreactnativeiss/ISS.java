@@ -45,6 +45,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 package com.viralnetworkreactnativeiss;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
 
 public class ISS {
   static final int NUMBER_OF_SECURITY_LEVELS = 3;
@@ -165,9 +170,9 @@ public class ISS {
     final byte[] digestsTrits = new byte [signatureFragments.length * Curl_729_27.HASH_LENGTH];
 
     for (int i = 0; i < signatureFragments.length; i++) {
-        final byte[] buffer = new byte[Curl_729_27.HASH_LENGTH];
+      final byte[] buffer = new byte[Curl_729_27.HASH_LENGTH];
 
-        digest(bundleFragments[i % NUMBER_OF_SECURITY_LEVELS], signatureFragments[i], buffer);
+      digest(bundleFragments[i % NUMBER_OF_SECURITY_LEVELS], signatureFragments[i], buffer);
 
       for (int j = 0; j < Curl_729_27.HASH_LENGTH; j++) {
         digestsTrits[i * Curl_729_27.HASH_LENGTH + j] = buffer[j];
@@ -205,5 +210,84 @@ public class ISS {
       index >>= 1;
     }
   }
+
+  private static Node tree(final ArrayList<Node> leaves) {
+    final ArrayList<Node> subnodes = new ArrayList();
+
+    for (int i = 0; i < leaves.size(); i += 2) {
+      final Node left = leaves.get(i);
+      final Node right = i + 1 < leaves.size() ? leaves.get(i + 1) : null;
+      byte[] addressTrits;
+
+      if (right != null) {
+        final Curl_729_27 curl = new Curl_729_27(Curl_729_27.HASH_LENGTH);
+        curl.absorb(left.address, 0, Curl_729_27.HASH_LENGTH);
+        curl.absorb(right.address, 0, Curl_729_27.HASH_LENGTH);
+        addressTrits = new byte[Curl_729_27.HASH_LENGTH];
+        curl.squeeze(addressTrits, 0, Curl_729_27.HASH_LENGTH);
+      } else {
+        addressTrits = left.address;
+      }
+
+      subnodes.add(new Node(addressTrits, 0, (left != null ? left.size : 0) + (right != null ? right.size : 0), left, right));
+    }
+
+    if (subnodes.size() == 1) {
+      return subnodes.get(0);
+    }
+
+    return tree(subnodes);
+  };
+
+  private static String serializeTree(final Node tree, JSONObject node) throws JSONException {
+    final JSONArray address = new JSONArray();
+    for (int i = 0; i < tree.address.length; i++) {
+      address.put((int) tree.address[i]);
+    }
+    if (node == null) {
+      node = new JSONObject();
+    }
+
+    node.put("address", address);
+    node.put("leafIndex", tree.leafIndex);
+    node.put("size", tree.size);
+    if (tree.left != null) {
+      final JSONObject leftNode = new JSONObject();
+      node.put("left", leftNode);
+      serializeTree(tree.left, leftNode);
+    }
+    if (tree.right != null) {
+      final JSONObject rightNode = new JSONObject();
+      node.put("right", rightNode);
+      serializeTree(tree.right, rightNode);
+    }
+
+    return node.toString();
+  }
+
+  public static String merkleTree(final byte[] seed, final int depth, final int start, final int security) {
+    final ArrayList<Node> leaves = new ArrayList();
+    final int count = (int) Math.pow(2, depth);
+
+    for (int i = 0; i < count; i++) {
+      final int leafIndex = start + i;
+      final byte[] subseedTrits = new byte[Curl_729_27.HASH_LENGTH];
+      final byte[] keyTrits = new byte[security * KEY_SIGNATURE_FRAGMENT_LENGTH];
+      final byte[] digestsTrits = new byte[security * Curl_729_27.HASH_LENGTH];
+      final byte[] addressTrits = new byte[Curl_729_27.HASH_LENGTH];
+      subseed(seed, start + i, subseedTrits);
+      key(subseedTrits, security, keyTrits);
+      digests(keyTrits, digestsTrits);
+      addressFromDigests(digestsTrits, addressTrits);
+
+      leaves.add(new Node(addressTrits, leafIndex, 1, null, null));
+    }
+
+    try {
+      return serializeTree(tree(leaves), null);
+    } catch (JSONException e) {
+      return "";
+    }
+  };
 
 }

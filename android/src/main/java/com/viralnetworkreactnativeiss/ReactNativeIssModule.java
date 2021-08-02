@@ -214,4 +214,13 @@ public class ReactNativeIssModule extends ReactContextBaseJavaModule {
         }
         promise.resolve(hashCopy2);
     }
+
+    @ReactMethod
+    public void merkleTree(final ReadableArray seed, final int depth, final int start, final int security, Promise promise) {
+        final byte[] seedCopy = new byte[Curl_729_27.HASH_LENGTH];
+        for (int i = 0; i < Curl_729_27.HASH_LENGTH; i++) {
+            seedCopy[i] = (byte) seed.getInt(i);
+        }
+        promise.resolve(ISS.merkleTree(seedCopy, depth, start, security));
+    }
 }
